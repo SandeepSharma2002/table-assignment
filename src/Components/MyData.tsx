@@ -89,7 +89,7 @@ export const MyData = () => {
         header: "Actions",
         id: "actions",
 
-        Cell: ( row:any ) => (
+        Cell: ( { row } :any) => (
           <div className="flex gap-2">
             <button
               onClick={() => deleteUser(row.original.id)}
