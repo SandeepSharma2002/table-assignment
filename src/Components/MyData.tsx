@@ -3,7 +3,7 @@ import {
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import userData from "../Services/MyData";
 import { useMemo, useState } from "react";
 import Loader from "./Loader";
@@ -89,7 +89,7 @@ export const MyData = () => {
         header: "Actions",
         id: "actions",
 
-        Cell: ({ row }) => (
+        Cell: ( row:any ) => (
           <div className="flex gap-2">
             <button
               onClick={() => deleteUser(row.original.id)}
@@ -182,12 +182,12 @@ export const MyData = () => {
     state: { pagination: paginationModel, rowSelection },
   });
 
-  const handleSearch = (partialValue) => {
+  const handleSearch = (partialValue:any) => {
     let userList: any = localStorage.getItem("Users");
     let tempData = JSON.parse(userList)
 
     if (partialValue?.length > 1) {
-      let temp = tempData.filter((item) => {
+      let temp = tempData.filter((item:any) => {
         for (const key in item) {
           if (item[key].includes(partialValue)) {
             return true;

@@ -26,11 +26,9 @@ const EditUser: React.FC<setShowModalFunc> = ({
   const form = useForm();
   const {
     register,
-    getValues,
     handleSubmit,
     control,
     setValue,
-    reset,
     formState: { errors },
   } = form;
 
@@ -46,7 +44,7 @@ const EditUser: React.FC<setShowModalFunc> = ({
     setLoading(true);
         let Users:any = localStorage.getItem("Users");
         setUserList(JSON.parse(Users));
-        let temp = JSON.parse(Users).find(item => item.id === id);
+        let temp = JSON.parse(Users).find((item:any) => item.id === id);
         setData(temp);
         setRole(temp.role);
         setValue('id',temp.id),
