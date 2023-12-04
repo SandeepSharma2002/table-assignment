@@ -8,19 +8,23 @@ import Loader from "./Loader";
 
 interface setShowModalFunc {
   setShowModal: Function;
-  id?: any;
+  id: any;
+  setId?: Function | any;
   update?: boolean;
   setUpdate?: any;
+  mode: string;
 }
 
 const EditUser: React.FC<setShowModalFunc> = ({
   setShowModal,
   id,
   setUpdate,
-  update
+  update,
+  setId,
+  mode
 }): any => {
   const [data, setData] = useState<any>();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [selectRole, setRole] = useState();
   const [userList, setUserList] = useState([]);
   const form = useForm();
@@ -33,15 +37,28 @@ const EditUser: React.FC<setShowModalFunc> = ({
   } = form;
 
   const onSubmit: SubmitHandler<any> = (formData:any) => {
+    if(mode == "edit")
+    {
     let temp:any = userList.map((item:any) => (item.id === formData.id ? { ...item, ...formData } : item));
     localStorage.setItem("Users", JSON.stringify(temp));
     toast.success("User Updated Successfully");
     setShowModal(false);
     setUpdate(!update);
+    }
+    else{
+    let userList: any = localStorage.getItem("Users");
+    let  myArr:any = JSON.parse(userList);
+    myArr.push(formData);
+    localStorage.setItem("Users", JSON.stringify(myArr));
+    setId((parseInt(id, 10) + 1).toString());
+    toast.success("New User Added Successfully");
+    setShowModal(false);
+    setUpdate(!update);
+    }
   };
 
   const getData = async () => {
-    setLoading(true);
+        setLoading(true);
         let Users:any = localStorage.getItem("Users");
         setUserList(JSON.parse(Users));
         let temp = JSON.parse(Users).find((item:any) => item.id === id);
@@ -65,7 +82,10 @@ const EditUser: React.FC<setShowModalFunc> = ({
   ];
 
   useEffect(() => {
+    if(mode == "edit")
     getData();
+  else
+  setValue("id",id);
   }, []);
 
   return (
@@ -76,7 +96,7 @@ const EditUser: React.FC<setShowModalFunc> = ({
           <div className="border-0 rounded-lg shadow-lg flex flex-col w-full px-5 bg-white outline-none focus:outline-none">
             <div className="flex items-start justify-between pt-3 px-2 md:p-5 border-b border-solid border-blueGray-200 rounded-t">
               <h6 className="text-sm md:text-3xl font-semibold">
-               Edit User
+               {mode === "edit" ? "Edit User" : "Add New User"}
               </h6>
               <button
                 className="p-1 ml-auto border-0 text-black opacity-60 float-right text-3xl leading-none font-semibold"
@@ -107,7 +127,7 @@ const EditUser: React.FC<setShowModalFunc> = ({
                 <input
                   id="id"
                   type="number"
-                  defaultValue={id}
+                  value={id}
                   disabled
                   className="border outline-[#2684ff] p-2 rounded-md border-[#ccc] w-full [-moz-appearance:_textfield] [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none pointer-events-none"
                   {...register("id")}
@@ -121,12 +141,12 @@ const EditUser: React.FC<setShowModalFunc> = ({
                   id="name"
                   type="text"
                   defaultValue={data?.name}
-                  {...register("name")}
+                  {...register("name",{required: "Name is required",})}
                   className="border p-2 rounded-md border-[#ccc] outline-[#2684ff] w-full"
                   placeholder="Enter First Name"
                 />
                 {errors?.name && (
-                  <p className="text-danger text-xs left-0 w-full">
+                  <p className="text-red-500 text-xs left-0 w-full">
                     Please Enter Name
                   </p>
                 )}
@@ -146,7 +166,7 @@ const EditUser: React.FC<setShowModalFunc> = ({
                   })}
                 />
                 {errors?.email && (
-                  <p className="text-danger text-xs left-0 w-full">
+                  <p className="text-red-500 text-xs left-0 w-full">
                     Please Enter Email
                   </p>
                 )}
