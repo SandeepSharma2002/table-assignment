@@ -213,7 +213,7 @@ const EditUser: React.FC<setShowModalFunc> = ({
                 className="bg-blue-700 text-white active:bg-emerald-600 font-medium uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 col-span-2 ml-auto"
                 type="submit"
               >
-               Update User
+               {mode === "edit" ? "Update User":"Add User"}
               </button>
             </form>
         }
