@@ -1,5 +1,6 @@
 import {
   MRT_PaginationState,
+  MRT_RowSelectionState,
   MaterialReactTable,
   useMaterialReactTable,
 } from "material-react-table";
@@ -23,7 +24,7 @@ export const MyData = () => {
     pageSize: 10,
     pageIndex: 0,
   });
-  const [rowSelection, setRowSelection] = useState({});
+  const [rowSelection, setRowSelection] = useState<MRT_RowSelectionState>({});
   const [initialData, setInitialData] = useState<any>([]);
 
   const globalTheme = useTheme();
@@ -45,9 +46,8 @@ export const MyData = () => {
     const limit = paginationModel.pageSize + skip;
     let userList: any = localStorage.getItem("Users");
     let temp = JSON.parse(userList)
-    const arr = Object.values(temp);
-    setInitialData(arr.slice(skip, limit));
-    setTotalRows(arr.length);
+    setInitialData(temp.slice(skip, limit));
+    setTotalRows(temp.length);
     setLoading(false);
   };
 
@@ -187,8 +187,7 @@ export const MyData = () => {
   const handleSearch = (partialValue:any) => {
     let userList: any = localStorage.getItem("Users");
     let tempData = JSON.parse(userList)
-
-    if (partialValue?.length > 1) {
+    if (partialValue?.length > 0) {
       let temp = tempData.filter((item:any) => {
         for (const key in item) {
           if (item[key].includes(partialValue)) {
@@ -205,16 +204,11 @@ export const MyData = () => {
 
   const multipleDelete = () => {
     let userList: any = localStorage.getItem("Users");
-    let  myObject:any = JSON.parse(userList);
-    let updatedObject:any ={};
+    let  myArr:any = JSON.parse(userList);
     const Keys = Object.keys(rowSelection)
-    for (const key in myObject) {
-      if (myObject.hasOwnProperty(key) && !Keys.includes(myObject[key].id)) {
-        updatedObject[key] = myObject[key];
-      }
-    }
-    localStorage.setItem("Users", JSON.stringify(updatedObject));
-    setTotalRows(Object.keys(updatedObject).length);
+    const newArrayOfObjects = myArr.filter((obj:any) => !Keys.includes(obj.id));
+    localStorage.setItem("Users", JSON.stringify(newArrayOfObjects));
+    setTotalRows(newArrayOfObjects.length);
     setRowSelection({});
     toast.success(`${Keys.length} Users Deleted Successfully`);
   };
