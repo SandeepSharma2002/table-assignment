@@ -45,8 +45,9 @@ export const MyData = () => {
     const limit = paginationModel.pageSize + skip;
     let userList: any = localStorage.getItem("Users");
     let temp = JSON.parse(userList)
-    setInitialData(temp.slice(skip, limit));
-    setTotalRows(temp.length);
+    const arr = Object.values(temp);
+    setInitialData(arr.slice(skip, limit));
+    setTotalRows(arr.length);
     setLoading(false);
   };
 
@@ -167,6 +168,7 @@ export const MyData = () => {
     layoutMode: "grid",
     paginationDisplayMode: "pages",
     positionGlobalFilter: "left",
+    getRowId:(row:any)=>row.id,
     onRowSelectionChange: setRowSelection,
     muiSearchTextFieldProps: {
       placeholder: "Search all users",
@@ -202,11 +204,21 @@ export const MyData = () => {
   };
 
   const multipleDelete = () => {
-    Object.keys(rowSelection).map((id) => {
-      const userId: any = (parseInt(id) + 1).toString();
-      deleteUser(userId);
-    });
+    let userList: any = localStorage.getItem("Users");
+    let  myObject:any = JSON.parse(userList);
+    let updatedObject:any ={};
+    const Keys = Object.keys(rowSelection)
+    for (const key in myObject) {
+      if (myObject.hasOwnProperty(key) && !Keys.includes(myObject[key].id)) {
+        updatedObject[key] = myObject[key];
+      }
+    }
+    localStorage.setItem("Users", JSON.stringify(updatedObject));
+    setTotalRows(Object.keys(updatedObject).length);
+    setRowSelection({});
+    toast.success(`${Keys.length} Users Deleted Successfully`);
   };
+
   useEffect(() => {
     getdata();
   }, [paginationModel.pageIndex, paginationModel.pageSize, totalRows,update]);
